@@ -28,7 +28,7 @@ ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@$(aws ec2 describe-instances
 ```
 # Improvements
 
-A number of things could be done to improve this project. The template currently creates a NAT Gateway which can be expensive for development and test environments. Expansion could involve giving users the option to choose a cheaper NAT instance as well. Security could be improved by adding a VPN to the bastion host or utilizing AWS Client VPN to create a direct connection to the VPC. Ethereum node options could be expanded by adding AWS Managed Blockchain to the template and integrating this with the parameters. 
+A number of things could be done to improve this project. The template currently creates a NAT Gateway which can be expensive for development and test environments. Expansion could involve giving users the option to choose a cheaper NAT instance as well. Security could be improved by adding a VPN to the bastion host or utilizing AWS Client VPN to create a direct connection to the VPC. Ethereum node options could be expanded by adding AWS Managed Blockchain to the template and integrating this with the parameters. Serverless options could also be explored including using ECS or EKS for running the Chainlink Node on Fargate and RDS or Aurora Serverless for running Postgres. 
 
 # References:  
   
