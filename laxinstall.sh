@@ -84,7 +84,7 @@ case $ANS1 in
   n|N )
     echo ""
 #    read -p "${b} Enter Ethereum endpoint URL/APIkey:${n} " ETHURL
-    sed -i "s|CHANGEME|$ETHURL|g" $WORKINGDIR/chainlink.env
+    sed -i "s|CHANGEME|$ETHURL|g" $WORKINGDIR/chainlink.env;;
   * )
   echo "invalid";;
 esac
