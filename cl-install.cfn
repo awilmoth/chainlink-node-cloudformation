@@ -335,7 +335,9 @@ Resources:
             snap install aws-cli --classic
             snap install jq --classic
             apt update && apt upgrade -y
-            aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | jq -r '.Parameter.Value' > /home/ubuntu/ChainlinkKeyPair.pem && chmod 400 /home/ubuntu/ChainlinkKeyPair.pem
+            aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | jq -r '.Parameter.Value' > /home/ubuntu/ChainlinkKeyPair.pem
+            chmod 400 /home/ubuntu/ChainlinkKeyPair.pem
+            chown ubuntu ChainlinkKeyPair.pem
             
   BastionInstanceProfile:
     Type: AWS::IAM::InstanceProfile
