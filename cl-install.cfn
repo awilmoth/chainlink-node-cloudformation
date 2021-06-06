@@ -231,7 +231,7 @@ Resources:
         - DeviceName: /dev/sda1
           Ebs:
             VolumeType: gp2
-            VolumeSize: 10
+            VolumeSize: 25
             DeleteOnTermination: true
             Encrypted: true
       Tags:
