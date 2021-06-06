@@ -1,0 +1,18 @@
+[
+    {
+      "ParameterKey": "ETHNetwork",
+      "ParameterValue": "r"
+    },
+    {
+      "ParameterKey": "Guipass",
+      "ParameterValue": "********"
+    },
+    {
+        "ParameterKey": "Email",
+        "ParameterValue": "mail@example.com"
+    },
+    {
+        "ParameterKey": "EthURL",
+        "ParameterValue": "wss://really-random-identifier.rinkeby.quiknode.pro/"
+    }
+]
