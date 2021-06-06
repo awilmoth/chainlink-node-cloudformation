@@ -1,6 +1,6 @@
 Parameters:
-  Network:
-    Description: Select Network. M for Mainnet, R for Ropsten
+  ETHNetwork:
+    Description: Select Network. M for Mainnet, R for Rinkeby
     Type: String
     AllowedValues: [r, m]
   Guipass:
@@ -243,7 +243,7 @@ Resources:
           !Sub |
             #!/bin/bash
             snap install amazon-ssm-agent --classic
-            echo ANS0=${Network} >> /etc/environment
+            echo ANS0=${ETHNetwork} >> /etc/environment
             echo ANS1='n' >> /etc/environment
             echo USERNAME='ubuntu' >> /etc/environment
             echo EMAIL=${Email} >> /etc/environment
