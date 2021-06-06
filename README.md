@@ -33,7 +33,7 @@ The command below creates a SOCKS5 proxy to the bastion host via SSH on localhos
 ```
 ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=Bastion' 'Name=instance-state-name,Values=running' --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text)
 ```
-The command below will give you the Chainlink Node's private IP address where the UI will be available on port 6688 through the proxied browser. The private IP is also available through the AWS console.
+The command below will give you the Chainlink Node's private IP address where the UI will be available on port 6688 through the proxied browser. The private IP address will be in the 172.31.3.0/24 subnet.
 ```
 aws ec2 describe-instances --filters 'Name=tag:Name,Values=ChainlinkNode' 'Name=instance-state-name,Values=running' --query 'Reservations[*].Instances[*].[PrivateIpAddress]' --output text
 ``` 
