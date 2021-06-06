@@ -18,14 +18,14 @@ aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | 
 ```
 # Accessing the Chainlink Node UI
 
-To access the Chainlink Node UI, create an SSH tunnel to the bastion host. From there, you can use a SOCKS5 proxy on your browser to access the Chainlink Node UI via the server's private IP address on port 6688. Firefox is recommended as it provides easy setup for SSH proxies via the Preferences menu. The command below creates an SOCKS5 proxy on port 9090.
+To access the Chainlink Node UI, create an SSH tunnel to the bastion host. From there, you can use a SOCKS5 proxy on your browser to access the Chainlink Node UI via the server's private IP address on port 6688. Firefox is recommended as it provides easy setup for SOCKS5 proxies via the Preferences menu. The command below creates a SOCKS5 proxy on port 9090.
 
 ```
 
 ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@<BastionHostIP>
 
 ```
-# References:
-
-https://github.com/devlintrace/laxinstall. 
+# References:  
+  
+https://github.com/devlintrace/laxinstall
 https://github.com/thodges-gh  
