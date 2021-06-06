@@ -1,0 +1,390 @@
+Parameters:
+  Ans0:
+    Description: Select Network. M for Mainnet, R for Ropsten
+    Type: String
+    AllowedValues: [r, m]
+  Guipass:
+    Description: Chainlink Node GUI - Password
+    Type: String
+    NoEcho: true
+  Email:
+    Description: Chainlink Node GUI - Email for Login
+    Type: String
+  EthURL:
+    Description: URL for Ethereum Node
+    Type: String
+  Release:
+    Description: Chainlink Release
+    Type: String
+
+Mappings: 
+  RegionMap:
+    eu-north-1: 
+      AMD64: ami-0f7828a9c19ff4a9e
+    ap-south-1: 
+      AMD64: ami-0c1566e39d136b269
+    eu-west-3: 
+      AMD64: ami-08d3d8790db280475
+    eu-west-2: 
+      AMD64: ami-0e312244e15c975b0
+    eu-west-1: 
+      AMD64: ami-06c5b2809791cf59c
+    ap-northeast-3: 
+      AMD64: ami-02a8547248b1cc18b
+    ap-northeast-2: 
+      AMD64: ami-09378a0a8e36fabc7
+    ap-northeast-1: 
+      AMD64: ami-03f396733f38d658b
+    sa-east-1: 
+      AMD64: ami-045a803b4a81b4175
+    ca-central-1: 
+      AMD64: ami-0fc1738fbeaf067cf
+    ap-southeast-1: 
+      AMD64: ami-0d83255a5b17bc4d7
+    ap-southeast-2: 
+      AMD64: ami-0ad3265c866331223
+    eu-central-1: 
+      AMD64: ami-078ca7285317cfe91
+    us-east-1: 
+      AMD64: ami-01de8ddb33de7a3d3
+    us-east-2: 
+      AMD64: ami-051d99278ba9fdc66
+    us-west-1: 
+      AMD64: ami-06c5b2809791cf59c
+    us-west-2: 
+      AMD64: ami-0e312244e15c975b0
+
+Resources:
+  PrivateKey:
+    Type: Custom::RSAKey
+    Properties:
+      Name: /Chainlink/default/private-key
+      RefreshOnUpdate: false
+      ServiceToken: !GetAtt CFNSecretProvider.Arn
+
+  KeyPair:
+    Type: Custom::KeyPair
+    DependsOn: PrivateKey
+    Properties:
+      Name: ChainlinkKeyPair
+      PublicKeyMaterial: !GetAtt 'PrivateKey.PublicKey'
+      ServiceToken: !GetAtt CFNSecretProvider.Arn
+
+  CFNSecretProvider:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: !Sub 'binxio-public-${AWS::Region}'
+        S3Key: lambdas/cfn-secret-provider-0.13.2.zip
+      Handler: secrets.handler
+      MemorySize: 128
+      Role: !GetAtt 'CFNSecretProviderRole.Arn'
+      Runtime: python3.6
+      Timeout: 300
+
+  CFNSecretProviderLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${CFNSecretProvider}'
+      RetentionInDays: 30
+
+  CFNSecretProviderRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+          Condition: {}
+      Path: /
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+      - PolicyName: CFNCustomSecretProviderPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - iam:CreateAccessKey
+            - iam:UpdateAccessKey
+            - iam:DeleteAccessKey
+            - ssm:PutParameter
+            - ssm:GetParameter
+            - ssm:DeleteParameter
+            - ec2:ImportKeyPair
+            - ec2:DeleteKeyPair
+            Resource:
+            - '*'
+          - Effect: Allow
+            Action:
+            - kms:Encrypt
+            - kms:Decrypt
+            Resource:
+            - '*'
+
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+          CidrBlock: 172.31.0.0/16
+     
+  PublicSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: us-east-1a
+      CidrBlock: 172.31.1.0/24
+      MapPublicIpOnLaunch: true
+     
+  PrivateSubnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: us-east-1a
+      CidrBlock: 172.31.3.0/24
+      MapPublicIpOnLaunch: false
+           
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join [_, [!Ref 'AWS::StackName']]
+        - Key: Network
+          Value: Public
+      
+  GatewayToInternet:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+      
+  PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Network
+          Value: Public
+      
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: GatewayToInternet
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+     
+  PublicSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+     
+  NatGateway:
+    Type: "AWS::EC2::NatGateway"
+    DependsOn: NatPublicIP
+    Properties: 
+      AllocationId: !GetAtt NatPublicIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+     
+  NatPublicIP:
+    Type: "AWS::EC2::EIP"
+    DependsOn: VPC
+    Properties:
+      Domain: vpc
+     
+  PrivateRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Network
+          Value: Private
+      
+  PrivateRoute:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+     
+  PrivateSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  ChainlinkHost:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - AMD64      
+      KeyName: ChainlinkKeyPair
+      InstanceType: 't3.small'
+      SubnetId: !Ref PrivateSubnet1
+      SecurityGroupIds:
+        - !Ref ChainlinkHostSecurityGroup
+      IamInstanceProfile: !Ref ChainlinkInstanceProfile
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvdcz
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 64
+            DeleteOnTermination: true
+            Encrypted: true
+      Tags:
+        -
+          Key: Name
+          Value: ChainlinkNode
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            snap install amazon-ssm-agent --classic
+            apt update && apt upgrade -y
+            ANS0=${Ans0}
+            ANS1='n'
+            USERNAME='ubuntu'
+            EMAIL=${Email}
+            GUIPASS=${Guipass}
+            ETHURL=${EthURL}
+            RELEASE=${Release}
+            wget https://raw.githubusercontent.com/awilmoth/laxinstall-cloudformation/master/laxinstall.sh
+            chmod +x laxinstall.sh
+            sudo ./laxinstall.sh
+
+  ChainlinkInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ChainlinkRole
+
+  ChainlinkRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'
+      Policies:
+        - PolicyName: chainlink
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource:
+                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Chainlink/default/*'
+
+  ChainlinkHostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Chainlink
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          CidrIp: '172.31.1.0/24'
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+
+  BastionHost:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - AMD64      
+      KeyName: ChainlinkKeyPair
+      InstanceType: 't3.micro'
+      SourceDestCheck: false
+      SubnetId: !Ref PublicSubnet1
+      SecurityGroupIds:
+        - !Ref BastionHostSecurityGroup
+      IamInstanceProfile: !Ref BastionInstanceProfile
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvdcz
+          Ebs:
+            VolumeType: gp2
+            VolumeSize: 10
+            DeleteOnTermination: true
+            Encrypted: true
+      Tags:
+        -
+          Key: Name
+          Value: Bastion
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            export AWS_DEFAULT_REGION=${AWS::Region}
+            snap install amazon-ssm-agent --classic
+            snap install aws-cli --classic
+            snap install jq --classic
+            apt update && apt upgrade -y
+            aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | jq -r '.Parameter.Value' > /home/ubuntu/ChainlinkKeyPair.pem && chmod 400 /home/ubuntu/ChainlinkKeyPair.pem
+            
+  BastionInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref BastionRole
+
+  BastionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'
+      Policies:
+        - PolicyName: bastion
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource:
+                  - !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/Chainlink/default/*'
+
+  BastionHostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Bastion
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: '0.0.0.0/0'
+
+  IPAddress:
+    Type: AWS::EC2::EIP
+
+  IPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref 'BastionHost'
+      EIP: !Ref 'IPAddress'
