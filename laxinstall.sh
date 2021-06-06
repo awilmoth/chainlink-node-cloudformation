@@ -64,13 +64,13 @@ case $ANS0 in
   m|M )
     echo ""
     echo "You selected Mainnet."
-    FIEWSNETWORK=wss://cl-ropsten.fiews.io/v1/
     sed -i "s|ETH_CHAIN_ID=3|ETH_CHAIN_ID=1|g" $WORKINGDIR/chainlink.env
     sed -i "s|LINK_CONTRACT_ADDRESS=0x20fE562d797A42Dcb3399062AE9546cd06f63280|#LINK_CONTRACT_ADDRESS=0x20fE562d797A42Dcb3399062AE9546cd06f63280|g" $WORKINGDIR/chainlink.env;;
   r|R )
     echo ""
-    echo "You selected Ropsten."
-    FIEWSNETWORK=wss://cl-main.fiews.io/v1/;;
+    echo "You selected Rinkeby."
+    sed -i "s|ETH_CHAIN_ID=3|ETH_CHAIN_ID=4|g" $WORKINGDIR/chainlink.env
+    sed -i "s|LINK_CONTRACT_ADDRESS=0x20fE562d797A42Dcb3399062AE9546cd06f63280|LINK_CONTRACT_ADDRESS=0x01BE23585060835E02B77ef475b0Cc51aA1e0709|g" $WORKINGDIR/chainlink.env;;
   * )
   echo "invalid";;
 esac
