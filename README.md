@@ -11,7 +11,7 @@ aws cloudformation create-stack --stack-name chainlink-node --template-body file
 
 # Accessing the Private Key
 
-The private key created by the template can be downloaded by means of the AWS CLI. You need the private key to initiate an SSH connection from your computer to the bastion host. The same private key can be used to SSH into the Chainlink Node via the bastion host if needed. Please note that the default format in your AWS config on your local machine needs to be set to json for this to work, and jq needs to be installed. 
+The private key created by the template can be downloaded by means of the AWS CLI. You need the private key to initiate an SSH connection from your computer to the bastion host. The same private key can be used to SSH into the Chainlink Node via the bastion host if needed. Please note that the default format in the AWS config on your local machine needs to be set to json for this to work, and jq needs to be installed. 
 
 ## Writing the Private Key to 'ChainlinkKeyPair.pem' on Local Machine
 
