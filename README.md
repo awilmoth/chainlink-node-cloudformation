@@ -1,6 +1,6 @@
 # Overview
 
-This project creates a secure Chainlink node running on an Ubuntu 20.04 EC2 instance using docker. The Chainlink node runs in a private subnet and can be accessed via private networking from a bastion host which is also created. The template creates a VPC and associated networking in addition to a private key which is stored in SSM Parameter store.
+This project creates a secure Chainlink Node running on an Ubuntu 20.04 EC2 instance using docker. The Chainlink node runs in a private subnet and can be accessed via private networking from a bastion host which is also created. The template creates a VPC and associated networking in addition to a private key which is stored in SSM Parameter Store.
 
 # Installation
 
@@ -21,7 +21,7 @@ export AWS_DEFAULT_REGION=$(curl --silent http://169.254.169.254/latest/dynamic/
 ```
 # Accessing the Chainlink Node UI
 
-To access the Chainlink Node UI, it's convenient to create a SOCKS5 proxy on your local machine. From there, you can use a browser to access the Chainlink Node UI via the server's private IP address on port 6688. Firefox is recommended as it provides easy setup for SOCKS5 proxies via the Preferences menu. The command below creates a SOCKS5 proxy via SSH on localhost port 9090. Enter this information in Firefox. The command below creates a SOCKS5 proxy to the bastion host on localhost port 9090.
+To access the Chainlink Node UI, it's convenient to create a SOCKS5 proxy on your local machine. From there, you can use a browser to access the Chainlink Node UI via the server's private IP address on port 6688. Firefox is recommended as it provides easy setup for SOCKS5 proxies via the Preferences menu. The command below creates a SOCKS5 proxy to the bastion host via SSH on localhost port 9090.
 
 ```
 ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=Bastion' --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text)
