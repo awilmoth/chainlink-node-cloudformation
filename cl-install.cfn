@@ -250,7 +250,7 @@ Resources:
             echo GUIPASS=${Guipass} >> /etc/environment
             echo ETHURL=${EthURL} >> /etc/environment
             sudo -i -u ubuntu
-            wget https://raw.githubusercontent.com/awilmoth/laxinstall-cloudformation/master/laxinstall.sh
+            wget https://github.com/awilmoth/chainlink-node-cloudformation/blob/master/laxinstall.sh
             chmod +x laxinstall.sh
             sudo ./laxinstall.sh
 
@@ -331,9 +331,6 @@ Resources:
             snap install aws-cli --classic
             snap install jq --classic
             apt update && apt upgrade -y
-            aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | jq -r '.Parameter.Value' > /home/ubuntu/ChainlinkKeyPair.pem
-            chmod 400 /home/ubuntu/ChainlinkKeyPair.pem
-            chown ubuntu /home/ubuntu/ChainlinkKeyPair.pem
 
   BastionInstanceProfile:
     Type: AWS::IAM::InstanceProfile
