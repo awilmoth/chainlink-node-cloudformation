@@ -24,11 +24,11 @@ export AWS_DEFAULT_REGION=$(curl --silent http://169.254.169.254/latest/dynamic/
 To access the Chainlink Node UI, it's convenient to create a SOCKS5 proxy on your local machine. From there, you can use a browser to access the Chainlink Node UI via the server's private IP address on port 6688. Firefox is recommended as it provides easy setup for SOCKS5 proxies via the Preferences menu. The command below creates a SOCKS5 proxy to the bastion host via SSH on localhost port 9090. 
 
 ```
-ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=Bastion' 'Name=instance-state-name,Values=Running' --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text)
+ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=Bastion' 'Name=instance-state-name,Values=running' --query 'Reservations[*].Instances[*].[PublicIpAddress]' --output text)
 ```
 The command below will give you the Chainlink Node's private IP address where the UI will be available on port 6688 through the proxied browser. The private IP is also available through the AWS console.
 ```
-aws ec2 describe-instances --filters 'Name=tag:Name,Values=ChainlinkNode' 'Name=instance-state-name,Values=Running' --query 'Reservations[*].Instances[*].[PrivateIpAddress]' --output text
+aws ec2 describe-instances --filters 'Name=tag:Name,Values=ChainlinkNode' 'Name=instance-state-name,Values=running' --query 'Reservations[*].Instances[*].[PrivateIpAddress]' --output text
 ``` 
 # Improvements
 
