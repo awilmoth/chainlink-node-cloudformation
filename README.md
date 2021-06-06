@@ -5,6 +5,9 @@ This project creates a secure Chainlink Node running on an Ubuntu 20.04 EC2 inst
 # Installation
 
 Upload cl-install.cfn to Cloudformation to create the resources. Fill in the required values for installation. You'll need the websocket address of an Ethereum node that runs either Rinkeby or Mainnet.
+```
+aws cloudformation create-stack --stack-name chainlink-node --template-body file://cl-install.cfn --parameters  ParameterKey=ETHNetwork,ParameterValue=r ParameterKey=Guipass,ParameterValue=******** ParameterKey=Email,ParameterValue=mail@example.com ParameterKey=EthURL,ParameterValue=wss://really-random-identifier.rinkeby.quiknode.pro/
+```
 
 # Accessing the Private Key
 
