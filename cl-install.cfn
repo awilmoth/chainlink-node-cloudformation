@@ -250,7 +250,7 @@ Resources:
             echo GUIPASS=${Guipass} >> /etc/environment
             echo ETHURL=${EthURL} >> /etc/environment
             sudo -i -u ubuntu
-            wget https://github.com/awilmoth/chainlink-node-cloudformation/blob/master/laxinstall.sh
+            wget -O laxinstall.sh https://raw.githubusercontent.com/awilmoth/chainlink-node-cloudformation/master/laxinstall.sh
             chmod +x laxinstall.sh
             sudo bash laxinstall.sh
 
