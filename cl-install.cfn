@@ -228,10 +228,10 @@ Resources:
         - !Ref ChainlinkHostSecurityGroup
       IamInstanceProfile: !Ref ChainlinkInstanceProfile
       BlockDeviceMappings:
-        - DeviceName: /dev/xvdcz
+        - DeviceName: /dev/sda1
           Ebs:
             VolumeType: gp2
-            VolumeSize: 64
+            VolumeSize: 10
             DeleteOnTermination: true
             Encrypted: true
       Tags:
@@ -312,7 +312,7 @@ Resources:
         - !Ref BastionHostSecurityGroup
       IamInstanceProfile: !Ref BastionInstanceProfile
       BlockDeviceMappings:
-        - DeviceName: /dev/xvdcz
+        - DeviceName: /dev/sda1
           Ebs:
             VolumeType: gp2
             VolumeSize: 10
