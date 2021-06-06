@@ -1,10 +1,10 @@
 Parameters:
-  Ans0:
+  Network:
     Description: Select Network. M for Mainnet, R for Ropsten
     Type: String
     AllowedValues: [r, m]
   Guipass:
-    Description: Chainlink Node GUI - Password
+    Description: Chainlink Node GUI - Password. Minimum of 8 characters.
     Type: String
     NoEcho: true
   Email:
@@ -243,12 +243,13 @@ Resources:
           !Sub |
             #!/bin/bash
             snap install amazon-ssm-agent --classic
-            ANS0=${Ans0}
-            ANS1='n'
-            USERNAME='ubuntu'
-            EMAIL=${Email}
-            GUIPASS=${Guipass}
-            ETHURL=${EthURL}
+            echo ANS0=${Network} >> /etc/environment
+            echo ANS1='n' >> /etc/environment
+            echo USERNAME='ubuntu' >> /etc/environment
+            echo EMAIL=${Email} >> /etc/environment
+            echo GUIPASS=${Guipass} >> /etc/environment
+            echo ETHURL=${EthURL} >> /etc/environment
+            sudo -i -u ubuntu
             wget https://raw.githubusercontent.com/awilmoth/laxinstall-cloudformation/master/laxinstall.sh
             chmod +x laxinstall.sh
             sudo ./laxinstall.sh
