@@ -1,6 +1,6 @@
 Parameters:
-  Network:
-    Description: Select Network. M for Mainnet, R for Ropsten
+  ETHNetwork:
+    Description: Select Network. M for Mainnet, R for Rinkeby
     Type: String
     AllowedValues: [r, m]
   Guipass:
@@ -228,10 +228,10 @@ Resources:
         - !Ref ChainlinkHostSecurityGroup
       IamInstanceProfile: !Ref ChainlinkInstanceProfile
       BlockDeviceMappings:
-        - DeviceName: /dev/xvdcz
+        - DeviceName: /dev/sda1
           Ebs:
             VolumeType: gp2
-            VolumeSize: 64
+            VolumeSize: 10
             DeleteOnTermination: true
             Encrypted: true
       Tags:
@@ -243,14 +243,14 @@ Resources:
           !Sub |
             #!/bin/bash
             snap install amazon-ssm-agent --classic
-            echo ANS0=${Network} >> /etc/environment
+            echo ANS0=${ETHNetwork} >> /etc/environment
             echo ANS1='n' >> /etc/environment
             echo USERNAME='ubuntu' >> /etc/environment
             echo EMAIL=${Email} >> /etc/environment
             echo GUIPASS=${Guipass} >> /etc/environment
             echo ETHURL=${EthURL} >> /etc/environment
             sudo -i -u ubuntu
-            wget https://raw.githubusercontent.com/awilmoth/laxinstall-cloudformation/master/laxinstall.sh
+            wget https://github.com/awilmoth/chainlink-node-cloudformation/blob/master/laxinstall.sh
             chmod +x laxinstall.sh
             sudo ./laxinstall.sh
 
@@ -312,7 +312,7 @@ Resources:
         - !Ref BastionHostSecurityGroup
       IamInstanceProfile: !Ref BastionInstanceProfile
       BlockDeviceMappings:
-        - DeviceName: /dev/xvdcz
+        - DeviceName: /dev/sda1
           Ebs:
             VolumeType: gp2
             VolumeSize: 10
@@ -331,9 +331,6 @@ Resources:
             snap install aws-cli --classic
             snap install jq --classic
             apt update && apt upgrade -y
-            aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | jq -r '.Parameter.Value' > /home/ubuntu/ChainlinkKeyPair.pem
-            chmod 400 /home/ubuntu/ChainlinkKeyPair.pem
-            chown ubuntu /home/ubuntu/ChainlinkKeyPair.pem
 
   BastionInstanceProfile:
     Type: AWS::IAM::InstanceProfile
