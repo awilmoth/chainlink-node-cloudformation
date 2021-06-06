@@ -27,5 +27,5 @@ ssh -D 9090 -q -C -N -i ChainlinkKeyPair.pem ubuntu@<BastionHostIP>
 ```
 # References:  
   
-https://github.com/devlintrace/laxinstall
+https://github.com/devlintrace/laxinstall\
 https://github.com/thodges-gh  
