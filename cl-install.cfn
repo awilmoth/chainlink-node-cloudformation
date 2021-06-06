@@ -13,9 +13,6 @@ Parameters:
   EthURL:
     Description: URL for Ethereum Node
     Type: String
-  Release:
-    Description: Chainlink Release
-    Type: String
 
 Mappings: 
   RegionMap:
@@ -246,14 +243,12 @@ Resources:
           !Sub |
             #!/bin/bash
             snap install amazon-ssm-agent --classic
-            apt update && apt upgrade -y
             ANS0=${Ans0}
             ANS1='n'
             USERNAME='ubuntu'
             EMAIL=${Email}
             GUIPASS=${Guipass}
             ETHURL=${EthURL}
-            RELEASE=${Release}
             wget https://raw.githubusercontent.com/awilmoth/laxinstall-cloudformation/master/laxinstall.sh
             chmod +x laxinstall.sh
             sudo ./laxinstall.sh
@@ -337,8 +332,8 @@ Resources:
             apt update && apt upgrade -y
             aws ssm get-parameter --name /Chainlink/default/private-key --with-decryption | jq -r '.Parameter.Value' > /home/ubuntu/ChainlinkKeyPair.pem
             chmod 400 /home/ubuntu/ChainlinkKeyPair.pem
-            chown ubuntu ChainlinkKeyPair.pem
-            
+            chown ubuntu /home/ubuntu/ChainlinkKeyPair.pem
+
   BastionInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:

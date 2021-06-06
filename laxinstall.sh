@@ -10,8 +10,8 @@ aptInstall () {
 echo " Updating apt & Installing Docker-CE"
 apt-get -y update >>/dev/null 2>&1
 apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common >>/dev/null 2>&1
-curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - >>/dev/null 2>&1
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" >>/dev/null 2>&1
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - >>/dev/null 2>&1
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >>/dev/null 2>&1
 apt-get -y update >>/dev/null 2>&1
 apt-get -y install docker-ce >>/dev/null 2>&1
 groupadd docker >>/dev/null 2>&1
@@ -90,7 +90,7 @@ case $ANS1 in
 esac
 echo ":latest tag no longer supported."
 #read -p "${b} Please specify desired Chainlink Release.:${n} " $RELEASE
-sed -i 's/latest/$RELEASE/' Dockerfile
+#sed -i 's/latest/$RELEASE/' Dockerfile
 echo " Starting Postgres and Chainlink containers"
 docker-compose build
 docker-compose up -d
