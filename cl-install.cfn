@@ -249,10 +249,10 @@ Resources:
             echo EMAIL=${Email} >> /etc/environment
             echo GUIPASS=${Guipass} >> /etc/environment
             echo ETHURL=${EthURL} >> /etc/environment
-            sudo -i -u root
+            sudo -i -u ubuntu
             wget https://github.com/awilmoth/chainlink-node-cloudformation/blob/master/laxinstall.sh
             chmod +x laxinstall.sh
-            bash laxinstall.sh
+            sudo bash laxinstall.sh
 
   ChainlinkInstanceProfile:
     Type: AWS::IAM::InstanceProfile
