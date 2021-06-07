@@ -9,6 +9,14 @@ Upload cl-install.cfn to Cloudformation to create the resources. Fill in the req
 aws cloudformation create-stack --stack-name chainlink-node --template-body file://cl-install.cfn --parameters file://parameters.json --capabilities CAPABILITY_NAMED_IAM
 ```
 
+### parameters.json
+
+ETHNetwork - r for Rinkeby, m for Mainnet
+EthURL - Your wss:// URL
+Email - Email for GUI Login
+Guipass - Password for GUI. Must be at least 8 characters
+
+
 # Accessing the Private Key
 
 The private key created by the template can be downloaded by means of the AWS CLI. You need the private key to initiate an SSH connection from your computer to the bastion host. The same private key can be used to SSH into the Chainlink Node via the bastion host if needed. Please note that the default format in the AWS config on your local machine needs to be set to json for this to work, and jq needs to be installed. 
