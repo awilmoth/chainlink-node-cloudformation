@@ -11,10 +11,10 @@ aws cloudformation create-stack --stack-name chainlink-node --template-body file
 
 ### parameters.json
 
-ETHNetwork - r for Rinkeby, m for Mainnet
-EthURL - Your wss:// URL
-Email - Email for GUI Login
-Guipass - Password for GUI. Must be at least 8 characters
+ETHNetwork - r for Rinkeby, m for Mainnet. 
+EthURL - Your wss:// URL. 
+Email - Email for GUI Login.   
+Guipass - Password for GUI. Must be at least 8 characters. 
 
 
 # Accessing the Private Key
